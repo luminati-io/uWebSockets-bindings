@@ -1,6 +1,6 @@
 {
-  "name": "uWebSockets-bindings",
-  "version": "10.148.0-hola.7",
+  "name": "uws",
+  "version": "10.148.0-hola.8",
   "scripts": {
     "install": "cd nodejs && make && cd dist && node-gyp rebuild"
   },
