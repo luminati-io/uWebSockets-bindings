@@ -1,6 +1,6 @@
 {
   "name": "uWebSockets-bindings",
-  "version": "10.148.0-hola.4",
+  "version": "10.148.0-hola.5",
   "scripts": {
     "install": "cd nodejs && make && cd dist && npm i"
   },
