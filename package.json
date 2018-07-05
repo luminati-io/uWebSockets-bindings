@@ -1,0 +1,10 @@
+{
+  "name": "uWebSockets-bindings",
+  "version": "10.148.0-hola.0",
+  "scripts": {
+    "postinstall": "npm i ./nodejs/dist/"
+  },
+  "dependencies": {
+    "uws": "file:nodejs/dist"
+  }
+}
