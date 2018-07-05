@@ -11,7 +11,6 @@ default:
 	cp -r ../uWebSockets/src dist/
 	cp src/addon.cpp dist/src/addon.cpp
 	cp src/addon.h dist/src/addon.h
-	cp src/http.h dist/src/http.h
 	cp src/uws.js dist/uws.js
 	for f in dist/*.node; do chmod +x $$f; done
 targets:
