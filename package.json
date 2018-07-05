@@ -4,9 +4,7 @@
   "scripts": {
     "install": "cd nodejs && make && cd dist && npm i"
   },
-  "dependencies": {
-    "uws": "file:nodejs/dist"
-  },
+  "dependencies": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/hola/uWebsockets-bindings.git"
