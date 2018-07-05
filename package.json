@@ -1,10 +1,14 @@
 {
   "name": "uWebSockets-bindings",
-  "version": "10.148.0-hola.0",
+  "version": "10.148.0-hola.3",
   "scripts": {
-    "postinstall": "npm i ./nodejs/dist/"
+    "install": "cd nodejs && make && cd dist && npm i"
   },
   "dependencies": {
     "uws": "file:nodejs/dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hola/uWebsockets-bindings.git"
   }
 }
