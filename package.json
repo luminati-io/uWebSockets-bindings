@@ -1,9 +1,10 @@
 {
   "name": "uWebSockets-bindings",
-  "version": "10.148.0-hola.6",
+  "version": "10.148.0-hola.7",
   "scripts": {
-    "install": "cd nodejs && make && cd dist && npm i"
+    "install": "cd nodejs && make && cd dist && node-gyp rebuild"
   },
+  "main": "nodejs/dist/uws.js",
   "dependencies": {},
   "repository": {
     "type": "git",
