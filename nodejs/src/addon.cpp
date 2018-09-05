@@ -16,6 +16,7 @@ void Main(Local<Object> exports) {
     NODE_SET_METHOD(exports, "upgrade", upgrade);
     NODE_SET_METHOD(exports, "connect", connect);
     NODE_SET_METHOD(exports, "setNoop", setNoop);
+    NODE_SET_METHOD(exports, "getSSLContext", getSSLContext);
     registerCheck(isolate);
 }
 

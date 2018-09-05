@@ -5,7 +5,7 @@ default:
 	make targets
 	NODE=targets/node-v8.1.2 ABI=57 make `(uname -s)`
 	NODE=targets/node-v9.2.0 ABI=59 make `(uname -s)`
-	NODE=targets/node-v10.6.0 ABI=64 make `(uname -s)`
+	NODE=targets/node-v10.9.0 ABI=64 make `(uname -s)`
 	cp README.md dist/README.md
 	cp ../uWebSockets/LICENSE dist/LICENSE
 	cp -r ../uWebSockets/src dist/
@@ -17,9 +17,9 @@ targets:
 	mkdir targets
 	curl https://nodejs.org/dist/v8.1.2/node-v8.1.2-headers.tar.gz | tar xz -C targets
 	curl https://nodejs.org/dist/v9.2.0/node-v9.2.0-headers.tar.gz | tar xz -C targets
-	curl https://nodejs.org/dist/v10.6.0/node-v10.6.0-headers.tar.gz | tar xz -C targets
+	curl https://nodejs.org/dist/v10.9.0/node-v10.9.0.tar.gz | tar xz -C targets
 Linux:
-	g++ $(CPP_SHARED) -static-libstdc++ -static-libgcc -I $$NODE/include/node -s -o dist/uws_linux_$$ABI.node
+	g++ $(CPP_SHARED) -static-libstdc++ -static-libgcc -I $$NODE/include/node -I $$NODE/src -I $$NODE/deps/uv/include -I $$NODE/deps/v8/include -I $$NODE/deps/openssl/openssl/include -s -o dist/uws_linux_$$ABI.node
 Darwin:
 	g++ $(CPP_SHARED) $(CPP_OSX) -I $$NODE/include/node -o dist/uws_darwin_$$ABI.node
 .PHONY: clean

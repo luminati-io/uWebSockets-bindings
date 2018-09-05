@@ -5,6 +5,14 @@
 #include <openssl/bio.h>
 #include <uv.h>
 
+#if NODE_MAJOR_VERSION>=10
+#define NODE_WANT_INTERNALS 1
+#include <node_crypto.h>
+using BaseObject = node::BaseObject;
+using SecureContext = node::crypto::SecureContext;
+#undef NODE_WANT_INTERNALS
+#endif
+
 using namespace std;
 using namespace v8;
 
@@ -198,6 +206,25 @@ struct Ticket {
     uv_os_sock_t fd;
     SSL *ssl;
 };
+
+void getSSLContext(const FunctionCallbackInfo<Value> &args) {
+    Isolate* isolate = args.GetIsolate();
+    if(args.Length() < 1 || !args[0]->IsObject()){
+      isolate->ThrowException(Exception::TypeError(
+      String::NewFromUtf8(isolate, "Error: One object expected")));
+      return;
+    }
+    Local<Context> context = isolate->GetCurrentContext();
+    Local<Object> obj = args[0]->ToObject(context).ToLocalChecked();
+#if NODE_MAJOR_VERSION < 10
+    Local<Value> ext = obj->Get(String::NewFromUtf8(isolate, "_external"));
+#else
+    SecureContext* sc;
+    ASSIGN_OR_RETURN_UNWRAP(&sc, obj);
+    Local<External> ext = External::New(isolate, sc->ctx_.get());
+#endif
+    args.GetReturnValue().Set(ext);
+}
 
 void upgrade(const FunctionCallbackInfo<Value> &args) {
     uWS::Group<uWS::SERVER> *serverGroup = (uWS::Group<uWS::SERVER> *) args[0].As<External>()->Value();
