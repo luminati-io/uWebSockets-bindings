@@ -7,9 +7,16 @@
 
 #if NODE_MAJOR_VERSION>=10
 #define NODE_WANT_INTERNALS 1
-#include <node_crypto.h>
+#include <async_wrap.h>
+#include <tls_wrap.h>
 using BaseObject = node::BaseObject;
+using TLSWrap = node::TLSWrap;
 using SecureContext = node::crypto::SecureContext;
+
+class TLSWrapSSLGetter : public node::TLSWrap {
+public:
+    SSL* getSSL(){ return this->ssl_.get(); }
+};
 #undef NODE_WANT_INTERNALS
 #endif
 
@@ -219,9 +226,11 @@ void getSSLContext(const FunctionCallbackInfo<Value> &args) {
 #if NODE_MAJOR_VERSION < 10
     Local<Value> ext = obj->Get(String::NewFromUtf8(isolate, "_external"));
 #else
+    TLSWrap* tw;
     SecureContext* sc;
-    ASSIGN_OR_RETURN_UNWRAP(&sc, obj);
-    Local<External> ext = External::New(isolate, sc->ctx_.get());
+    ASSIGN_OR_RETURN_UNWRAP(&tw, obj);
+    TLSWrapSSLGetter* twg = static_cast<TLSWrapSSLGetter*>(tw);
+    Local<External> ext = External::New(isolate, twg->getSSL());
 #endif
     args.GetReturnValue().Set(ext);
 }
