@@ -1,6 +1,7 @@
 CPP_SHARED := -DUSE_LIBUV -std=c++11 -O3 -I ../uWebSockets/src -shared -fPIC ../uWebSockets/src/Extensions.cpp ../uWebSockets/src/Group.cpp ../uWebSockets/src/Networking.cpp ../uWebSockets/src/Hub.cpp ../uWebSockets/src/Node.cpp ../uWebSockets/src/WebSocket.cpp ../uWebSockets/src/HTTPSocket.cpp ../uWebSockets/src/Socket.cpp ../uWebSockets/src/Epoll.cpp src/addon.cpp
 CPP_OSX := -stdlib=libc++ -mmacosx-version-min=10.7 -undefined dynamic_lookup
 OS := $(shell uname -s | tr A-Z a-z)
+src := src/addon.cpp src/addon.h
 
 default:
 	make targets
@@ -14,11 +15,11 @@ default:
 	cp src/addon.h dist/src/addon.h
 	cp src/uws.js dist/uws.js
 	for f in dist/*.node; do chmod +x $$f; done
-dist/uws_%_57.node:
+dist/uws_%_57.node: $(src)
 	NODE=targets/node-v8.1.2 ABI=57 make $*
-dist/uws_%_59.node:
+dist/uws_%_59.node: $(src)
 	NODE=targets/node-v9.2.0 ABI=59 make $*
-dist/uws_%_64.node:
+dist/uws_%_64.node: $(src)
 	NODE=targets/node-v10.9.0 ABI=64 make $*
 targets:
 	mkdir targets
