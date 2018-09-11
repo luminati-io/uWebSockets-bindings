@@ -17,6 +17,26 @@ class TLSWrapSSLGetter : public node::TLSWrap {
 public:
     SSL* getSSL(){ return this->ssl_.get(); }
 };
+
+#if defined(_MSC_VER)
+NO_RETURN void node::Assert(const char* const (*args)[4]) {
+  auto filename = (*args)[0];
+  auto linenum = (*args)[1];
+  auto message = (*args)[2];
+  auto function = (*args)[3];
+
+  char name[1024];
+  char title[1024] = "Node.js";
+  uv_get_process_title(title, sizeof(title));
+  snprintf(name, sizeof(name), "%s[%d]", title, uv_os_getpid());
+
+  fprintf(stderr, "%s: %s:%s:%s%s Assertion `%s' failed.\n",
+          name, filename, linenum, function, *function ? ":" : "", message);
+  fflush(stderr);
+  ABORT_NO_BACKTRACE();
+}
+#endif
+
 #undef NODE_WANT_INTERNALS
 #endif
 

@@ -20,14 +20,14 @@ dist/uws_%_57.node: $(src)
 dist/uws_%_59.node: $(src)
 	NODE=targets/node-v9.2.0 ABI=59 make $*
 dist/uws_%_64.node: $(src)
-	NODE=targets/node-v10.9.0 ABI=64 make $*
+	NODE=targets/node-v10.10.0 ABI=64 make $*
 targets:
 	mkdir targets
 	curl https://nodejs.org/dist/v8.1.2/node-v8.1.2-headers.tar.gz | tar xz -C targets
 	curl https://nodejs.org/dist/v9.2.0/node-v9.2.0-headers.tar.gz | tar xz -C targets
-	curl https://nodejs.org/dist/v10.9.0/node-v10.9.0.tar.gz | tar xz -C targets
+	curl https://nodejs.org/dist/v10.10.0/node-v10.10.0.tar.gz | tar xz -C targets
 linux:
-	g++ $(CPP_SHARED) -static-libstdc++ -static-libgcc -I $$NODE/include/node -I $$NODE/src -I $$NODE/deps/uv/include -I $$NODE/deps/v8/include -I $$NODE/deps/openssl/openssl/include -s -o dist/uws_linux_$$ABI.node
+	g++ $(CPP_SHARED) -static-libstdc++ -static-libgcc -I $$NODE/include/node -I $$NODE/src -I $$NODE/deps/uv/include -I $$NODE/deps/v8/include -I $$NODE/deps/openssl/openssl/include -I $$NODE/deps/zlib -s -o dist/uws_linux_$$ABI.node
 darwin:
 	g++ $(CPP_SHARED) $(CPP_OSX) -I $$NODE/include/node -o dist/uws_darwin_$$ABI.node
 .PHONY: clean
