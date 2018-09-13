@@ -7,16 +7,16 @@ call "%vspath%..\vc\vcvarsall.bat" amd64
 
 set v57=v8.1.2
 set v59=v9.2.0
-set v64=v10.10.0
+set v64=v10.9.0
 
 if not exist targets (
 mkdir targets
 curl https://nodejs.org/dist/%v57%/node-%v57%-headers.tar.gz | tar xz -C targets
-curl https://nodejs.org/dist/%v57%/win-x64/node.lib > targets/node-v8.1.2/node.lib
+curl https://nodejs.org/dist/%v57%/win-x64/node.lib > targets/node-%v57%/node.lib
 curl https://nodejs.org/dist/%v59%/node-%v59%-headers.tar.gz | tar xz -C targets
-curl https://nodejs.org/dist/%v59%/win-x64/node.lib > targets/node-v9.2.0/node.lib
+curl https://nodejs.org/dist/%v59%/win-x64/node.lib > targets/node-%v59%/node.lib
 curl https://nodejs.org/dist/%v64%/node-%v64%.tar.gz | tar xz -C targets
-curl https://nodejs.org/dist/%v64%/win-x64/node.lib > targets/node-v10.10.0/node.lib
+curl https://nodejs.org/dist/%v64%/win-x64/node.lib > targets/node-%v64%/node.lib
 )
 
 cp README.md dist/README.md

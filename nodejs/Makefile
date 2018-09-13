@@ -2,9 +2,12 @@ CPP_SHARED := -DUSE_LIBUV -std=c++11 -O3 -I ../uWebSockets/src -shared -fPIC ../
 CPP_OSX := -stdlib=libc++ -mmacosx-version-min=10.7 -undefined dynamic_lookup
 OS := $(shell uname -s | tr A-Z a-z)
 src := src/addon.cpp src/addon.h
+VER_57 := 8.1.2
+VER_59 := 9.2.0
+VER_64 := 10.9.0-src
 
 default:
-	make targets
+	mkdir -p targets
 	make dist/uws_$(OS)_57.node
 	make dist/uws_$(OS)_59.node
 	make dist/uws_$(OS)_64.node
@@ -15,17 +18,20 @@ default:
 	cp src/addon.h dist/src/addon.h
 	cp src/uws.js dist/uws.js
 	for f in dist/*.node; do chmod +x $$f; done
+targets/node-v%-src:
+	curl https://nodejs.org/dist/v$*/node-v$*.tar.gz | tar xz -C targets
+	mv targets/node-v$* targets/node-v$*-src
+targets/node-v%:
+	curl https://nodejs.org/dist/v$*/node-v$*-headers.tar.gz | tar xz -C targets
 dist/uws_%_57.node: $(src)
-	NODE=targets/node-v8.1.2 ABI=57 make $*
+	make targets/node-v$(VER_57)
+	NODE=targets/node-v$(VER_57) ABI=57 make $*
 dist/uws_%_59.node: $(src)
-	NODE=targets/node-v9.2.0 ABI=59 make $*
+	make targets/node-v$(VER_59)
+	NODE=targets/node-v$(VER_59) ABI=59 make $*
 dist/uws_%_64.node: $(src)
-	NODE=targets/node-v10.10.0 ABI=64 make $*
-targets:
-	mkdir targets
-	curl https://nodejs.org/dist/v8.1.2/node-v8.1.2-headers.tar.gz | tar xz -C targets
-	curl https://nodejs.org/dist/v9.2.0/node-v9.2.0-headers.tar.gz | tar xz -C targets
-	curl https://nodejs.org/dist/v10.10.0/node-v10.10.0.tar.gz | tar xz -C targets
+	make targets/node-v$(VER_64)
+	NODE=targets/node-v$(VER_64) ABI=64 make $*
 linux:
 	g++ $(CPP_SHARED) -static-libstdc++ -static-libgcc -I $$NODE/include/node -I $$NODE/src -I $$NODE/deps/uv/include -I $$NODE/deps/v8/include -I $$NODE/deps/openssl/openssl/include -I $$NODE/deps/zlib -s -o dist/uws_linux_$$ABI.node
 darwin:
