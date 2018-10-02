@@ -408,6 +408,16 @@ class Server extends EventEmitter {
                 options.path = '/' + options.path;
             }
 
+            this.httpServer.on('error', (err) => {
+                this.emit('error', err);
+            });
+
+            this.httpServer.on('newListener', (eventName, listener) => {
+                if (eventName === 'upgrade') {
+                    this._lastUpgradeListener = false;
+                }
+            });
+
             this.httpServer.on('upgrade', this._upgradeListener = ((request, socket, head) => {
                 if (!options.path || options.path == request.url.split('?')[0].split('#')[0]) {
                     if (options.verifyClient) {
@@ -441,16 +451,6 @@ class Server extends EventEmitter {
                     }
                 }
             }));
-
-            this.httpServer.on('newListener', (eventName, listener) => {
-                if (eventName === 'upgrade') {
-                    this._lastUpgradeListener = false;
-                }
-            });
-
-            this.httpServer.on('error', (err) => {
-                this.emit('error', err);
-            });
         }
 
         native.server.group.onDisconnection(this.serverGroup, (external, code, message, webSocket) => {
