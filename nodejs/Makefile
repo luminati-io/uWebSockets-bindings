@@ -5,12 +5,18 @@ src := src/addon.cpp src/addon.h
 VER_57 := 8.1.2
 VER_59 := 9.2.0
 VER_64 := 10.9.0-src
+NODE_VER := $(shell node -v | sed -e 's/v\([0-9]*\)\..*/\1/')
+NODE_ABI_VER := $(shell if [ "${NODE_VER}" -eq "10" ]; then \
+        echo "64"; \
+    elif [ "${NODE_VER}" -eq "9" ]; then \
+        echo "59"; \
+    else \
+        echo "57"; \
+    fi )
 
 default:
 	mkdir -p targets
-	make dist/uws_$(OS)_57.node
-	make dist/uws_$(OS)_59.node
-	make dist/uws_$(OS)_64.node
+	make dist/uws_$(OS)_$(NODE_ABI_VER).node
 	cp README.md dist/README.md
 	cp ../uWebSockets/LICENSE dist/LICENSE
 	cp -r ../uWebSockets/src dist/
