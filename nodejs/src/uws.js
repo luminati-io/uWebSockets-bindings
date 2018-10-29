@@ -419,6 +419,8 @@ class Server extends EventEmitter {
             });
 
             this.httpServer.on('upgrade', this._upgradeListener = ((request, socket, head) => {
+                socket.on('error', err=>this.emit('socketError', err));
+                socket.on('_tlsError', err=>this.emit('_tlsError', err));
                 if (!options.path || options.path == request.url.split('?')[0].split('#')[0]) {
                     if (options.verifyClient) {
                         const info = {
