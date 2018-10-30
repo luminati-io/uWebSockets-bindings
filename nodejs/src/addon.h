@@ -176,11 +176,16 @@ void setUserData(const FunctionCallbackInfo<Value> &args) {
 template <bool isServer>
 void getAddress(const FunctionCallbackInfo<Value> &args)
 {
-    typename uWS::WebSocket<isServer>::Address address = unwrapSocket<isServer>(args[0].As<External>())->getAddress();
-    Local<Array> array = Array::New(args.GetIsolate(), 3);
-    array->Set(0, Integer::New(args.GetIsolate(), address.port));
-    array->Set(1, String::NewFromUtf8(args.GetIsolate(), address.address));
-    array->Set(2, String::NewFromUtf8(args.GetIsolate(), address.family));
+    uWS::WebSocket<isServer> *webSocket = unwrapSocket<isServer>(args[0].As<External>());
+    typename uWS::WebSocket<isServer>::Address remote = webSocket->getRemoteAddress();
+    typename uWS::WebSocket<isServer>::Address local = webSocket->getLocalAddress();
+    Local<Array> array = Array::New(args.GetIsolate(), 6);
+    array->Set(0, Integer::New(args.GetIsolate(), remote.port));
+    array->Set(1, String::NewFromUtf8(args.GetIsolate(), remote.address));
+    array->Set(2, String::NewFromUtf8(args.GetIsolate(), remote.family));
+    array->Set(3, Integer::New(args.GetIsolate(), local.port));
+    array->Set(4, String::NewFromUtf8(args.GetIsolate(), local.address));
+    array->Set(5, String::NewFromUtf8(args.GetIsolate(), local.family));
     args.GetReturnValue().Set(array);
 }
 
