@@ -1,8 +1,8 @@
 {
   "name": "uws",
-  "version": "10.148.0-hola.16",
+  "version": "10.148.0-hola.17",
   "scripts": {
-    "install": "cd nodejs && make && cd dist && node-gyp rebuild"
+    "install": "cd nodejs && make && cd dist && node-gyp rebuild && rm -rf ../targets"
   },
   "main": "nodejs/dist/uws.js",
   "dependencies": {},
