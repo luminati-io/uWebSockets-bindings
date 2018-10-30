@@ -274,11 +274,14 @@ class WebSocket {
     }
 
     get _socket() {
-        const address = this.external ? native.getAddress(this.external) : new Array(3);
+        const address = this.external ? native.getAddress(this.external) : new Array(6);
         return {
             remotePort: address[0],
             remoteAddress: address[1],
-            remoteFamily: address[2]
+            remoteFamily: address[2],
+            localPort: address[3],
+            localAddress: address[4],
+            localFamily: address[5]
         };
     }
 
