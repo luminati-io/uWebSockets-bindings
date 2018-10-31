@@ -16,8 +16,8 @@
       'conditions': [
         ['OS=="linux"', {
 	  'include_dirs': [ '../targets/node-<!@(node -e "require(\'semver\').gte(process.version, \'10.0.0\') && process.stdout.write(\'v10.13.0-src\')")/src' ],
-          'cflags_cc': [ '-std=c++11', '-DUSE_LIBUV' ],
-          'cflags_cc!': [ '-fno-exceptions', '-std=gnu++11', '-fno-rtti' ],
+          'cflags_cc': [ '-std=c++1y', '-DUSE_LIBUV' ],
+          'cflags_cc!': [ '-fno-exceptions', '-std=gnu++1y', '-fno-rtti' ],
           'cflags!': [ '-fno-omit-frame-pointer' ],
           'ldflags!': [ '-rdynamic' ],
           'ldflags': [ '-s' ]
@@ -25,7 +25,7 @@
         ['OS=="mac"', {
           'xcode_settings': {
             'MACOSX_DEPLOYMENT_TARGET': '10.7',
-            'CLANG_CXX_LANGUAGE_STANDARD': 'c++11',
+            'CLANG_CXX_LANGUAGE_STANDARD': 'c++1y',
             'CLANG_CXX_LIBRARY': 'libc++',
             'GCC_GENERATE_DEBUGGING_SYMBOLS': 'NO',
             'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
