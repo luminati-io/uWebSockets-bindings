@@ -1,6 +1,6 @@
 {
   "name": "uws",
-  "version": "10.148.0-hola.18",
+  "version": "10.148.0-hola.19",
   "scripts": {
     "install": "cd nodejs && make && cd dist && node-gyp rebuild && rm -rf ../targets"
   },
