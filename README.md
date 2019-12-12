@@ -1,4 +1,4 @@
-# Nagging and DEMANDING instant updates to new Node.js major releases will result in block then permanent ban.
+Unofficial v12 port; no support.
 
 # Various bindings for µWebSockets
 * Node.js binding lives here, report issues with µWS itself over at uWebSockets repo. Report issues with the Node.js binding here.
