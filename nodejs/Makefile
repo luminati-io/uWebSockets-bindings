@@ -5,8 +5,11 @@ src := src/addon.cpp src/addon.h
 VER_57 := 8.1.2
 VER_59 := 9.2.0
 VER_64 := 10.13.0-src
+VER_72 := 12.13.1-src
 NODE_VER := $(shell node -v | sed -e 's/v\([0-9]*\)\..*/\1/')
-NODE_ABI_VER := $(shell if [ "${NODE_VER}" -eq "10" ]; then \
+NODE_ABI_VER := $(shell if [ "${NODE_VER}" -eq "12" ]; then \
+        echo "72"; \
+    elif [ "${NODE_VER}" -eq "10" ]; then \
         echo "64"; \
     elif [ "${NODE_VER}" -eq "9" ]; then \
         echo "59"; \
@@ -38,6 +41,9 @@ dist/uws_%_59.node: $(src)
 dist/uws_%_64.node: $(src)
 	make targets/node-v$(VER_64)
 	NODE=targets/node-v$(VER_64) ABI=64 make $*
+dist/uws_%_72.node: $(src)
+	make targets/node-v$(VER_72)
+	NODE=targets/node-v$(VER_72) ABI=72 make $*
 linux:
 	g++ $(CPP_SHARED) -static-libstdc++ -static-libgcc -I $$NODE/include/node -I $$NODE/src -I $$NODE/deps/uv/include -I $$NODE/deps/v8/include -I $$NODE/deps/openssl/openssl/include -I $$NODE/deps/zlib -s -o dist/uws_linux_$$ABI.node
 darwin:
