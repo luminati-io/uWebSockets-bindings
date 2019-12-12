@@ -1,6 +1,6 @@
 {
   "name": "uws",
-  "version": "10.148.0-hola.19",
+  "version": "10.148.0-lum.1",
   "scripts": {
     "install": "cd nodejs && make && cd dist && node-gyp rebuild && rm -rf ../targets"
   },
@@ -8,6 +8,6 @@
   "dependencies": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/hola/uWebsockets-bindings.git"
+    "url": "https://github.com/luminati-io/uWebsockets-bindings.git"
   }
 }
