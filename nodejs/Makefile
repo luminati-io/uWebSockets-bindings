@@ -5,13 +5,19 @@ src := src/addon.cpp src/addon.h
 VER_57 := 8.1.2
 VER_59 := 9.2.0
 VER_64 := 10.16.3-src
-VER_72 := 12.18.2-src
-NODE_VER := $(shell node -v | sed -e 's/v\([0-9]*\)\..*/\1/')
-NODE_ABI_VER := $(shell if [ "${NODE_VER}" -eq "12" ]; then \
-        echo "72"; \
-    elif [ "${NODE_VER}" -eq "10" ]; then \
+VER_72 := 12.15.0-src
+VER_72_2 := 12.18.2-src
+NODE_MAJ_VER := $(shell node -v | sed -e 's/v\([0-9]*\)\..*/\1/')
+NODE_MIN_VER := $(shell node -v | sed -e 's/v[0-9]*\.\([0-9]*\)\..*/\1/')
+NODE_ABI_VER := $(shell if [ "${NODE_MAJ_VER}" -eq "12" ]; then \
+        if [ "${NODE_MIN_VER}" -eq "16" ]; then \
+	    echo "72"; \
+	else \
+            echo "72_2"; \
+	fi \
+    elif [ "${NODE_MAJ_VER}" -eq "10" ]; then \
         echo "64"; \
-    elif [ "${NODE_VER}" -eq "9" ]; then \
+    elif [ "${NODE_MAJ_VER}" -eq "9" ]; then \
         echo "59"; \
     else \
         echo "57"; \
@@ -44,6 +50,9 @@ dist/uws_%_64.node: $(src)
 dist/uws_%_72.node: $(src)
 	make targets/node-v$(VER_72)
 	NODE=targets/node-v$(VER_72) ABI=72 make $*
+dist/uws_%_72_2.node: $(src)
+	make targets/node-v$(VER_72_2)
+	NODE=targets/node-v$(VER_72_2) ABI=72 make $*
 linux:
 	g++ $(CPP_SHARED) -static-libstdc++ -static-libgcc -I $$NODE/include/node -I $$NODE/src -I $$NODE/deps/uv/include -I $$NODE/deps/v8/include -I $$NODE/deps/openssl/openssl/include -I $$NODE/deps/zlib -s -o dist/uws_linux_$$ABI.node
 darwin:
