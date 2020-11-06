@@ -15,7 +15,7 @@
       ],
       'conditions': [
         ['OS=="linux"', {
-	  'include_dirs': [ '../targets/node-<!@(node -e "require(\'semver\').gt(process.version, \'12.16.1\') && process.stdout.write(\'v12.18.2-src\') || process.stdout.write(\'v12.15.0-src\')")/src' ],
+	  'include_dirs': [ '../targets/node-<!@(node -e "require(\'semver\').gte(process.version, \'14.15.0\') && process.stdout.write(\'v14.15.0-src\') || require(\'semver\').gt(process.version, \'12.16.1\') && process.stdout.write(\'v12.18.2-src\') || process.stdout.write(\'v12.15.0-src\')")/src' ],
           'cflags_cc': [ '-std=c++1y', '-DUSE_LIBUV' ],
           'cflags_cc!': [ '-fno-exceptions', '-std=gnu++1y', '-fno-rtti' ],
           'cflags!': [ '-fno-omit-frame-pointer' ],
