@@ -146,9 +146,15 @@ inline uWS::WebSocket<isServer> *unwrapSocket(Local<External> external) {
     return (uWS::WebSocket<isServer> *) external->Value();
 }
 
+#if NODE_MAJOR_VERSION > 13
+inline MaybeLocal<Value> wrapMessage(const char *message, size_t length, uWS::OpCode opCode, Isolate *isolate) {
+    return opCode == uWS::OpCode::BINARY ? (MaybeLocal<Value>) ArrayBuffer::New(isolate, (char *) message, length) : String::NewFromUtf8(isolate, message, NewStringType::kNormal, length);
+}
+#else
 inline Local<Value> wrapMessage(const char *message, size_t length, uWS::OpCode opCode, Isolate *isolate) {
     return opCode == uWS::OpCode::BINARY ? (Local<Value>) ArrayBuffer::New(isolate, (char *) message, length) : (Local<Value>) String::NewFromUtf8(isolate, message, String::kNormalString, length);
 }
+#endif
 
 template <bool isServer>
 inline Local<Value> getDataV8(uWS::WebSocket<isServer> *webSocket, Isolate *isolate) {
