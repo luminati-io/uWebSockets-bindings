@@ -146,15 +146,16 @@ inline uWS::WebSocket<isServer> *unwrapSocket(Local<External> external) {
     return (uWS::WebSocket<isServer> *) external->Value();
 }
 
-#if NODE_MAJOR_VERSION > 13
-inline MaybeLocal<Value> wrapMessage(const char *message, size_t length, uWS::OpCode opCode, Isolate *isolate) {
-    return opCode == uWS::OpCode::BINARY ? (MaybeLocal<Value>) ArrayBuffer::New(isolate, (char *) message, length) : String::NewFromUtf8(isolate, message, NewStringType::kNormal, length);
-}
-#else
 inline Local<Value> wrapMessage(const char *message, size_t length, uWS::OpCode opCode, Isolate *isolate) {
-    return opCode == uWS::OpCode::BINARY ? (Local<Value>) ArrayBuffer::New(isolate, (char *) message, length) : (Local<Value>) String::NewFromUtf8(isolate, message, String::kNormalString, length);
-}
+    if (opCode == uWS::OpCode::BINARY)
+        return (Local<Value>) ArrayBuffer::New(isolate, (char *) message, length);
+
+#if NODE_MAJOR_VERSION > 13
+    return (Local<Value>) String::NewFromUtf8(isolate, message, NewStringType::kNormal, length).ToLocalChecked();
+#else
+    return (Local<Value>) String::NewFromUtf8(isolate, message, String::kNormalString, length);
 #endif
+}
 
 template <bool isServer>
 inline Local<Value> getDataV8(uWS::WebSocket<isServer> *webSocket, Isolate *isolate) {
@@ -190,12 +191,22 @@ void getAddress(const FunctionCallbackInfo<Value> &args)
     typename uWS::WebSocket<isServer>::Address remote = webSocket->getRemoteAddress();
     typename uWS::WebSocket<isServer>::Address local = webSocket->getLocalAddress();
     Local<Array> array = Array::New(args.GetIsolate(), 6);
+
+#if NODE_MAJOR_VERSION >= 13
+    array->Set(args.GetIsolate()->GetCurrentContext(), 0, Integer::New(args.GetIsolate(), remote.port));
+    array->Set(args.GetIsolate()->GetCurrentContext(), 1, String::NewFromUtf8(args.GetIsolate(), remote.address).ToLocalChecked());
+    array->Set(args.GetIsolate()->GetCurrentContext(), 2, String::NewFromUtf8(args.GetIsolate(), remote.family).ToLocalChecked());
+    array->Set(args.GetIsolate()->GetCurrentContext(), 3, Integer::New(args.GetIsolate(), local.port));
+    array->Set(args.GetIsolate()->GetCurrentContext(), 4, String::NewFromUtf8(args.GetIsolate(), local.address).ToLocalChecked());
+    array->Set(args.GetIsolate()->GetCurrentContext(), 5, String::NewFromUtf8(args.GetIsolate(), local.family).ToLocalChecked());
+#else
     array->Set(0, Integer::New(args.GetIsolate(), remote.port));
     array->Set(1, String::NewFromUtf8(args.GetIsolate(), remote.address));
     array->Set(2, String::NewFromUtf8(args.GetIsolate(), remote.family));
     array->Set(3, Integer::New(args.GetIsolate(), local.port));
     array->Set(4, String::NewFromUtf8(args.GetIsolate(), local.address));
     array->Set(5, String::NewFromUtf8(args.GetIsolate(), local.family));
+#endif
     args.GetReturnValue().Set(array);
 }
 
@@ -241,7 +252,7 @@ void send(const FunctionCallbackInfo<Value> &args)
         sc->isolate = args.GetIsolate();
     }
     
-    bool compress = args[4]->BooleanValue(GetArgsCurCtx(args)).FromJust();
+    bool compress = args[4].As<Boolean>()->Value();
 
     unwrapSocket<isServer>(args[0].As<External>())->send(nativeString.getData(),
                            nativeString.getLength(), opCode, callback, sc, compress);
@@ -261,8 +272,13 @@ struct Ticket {
 void getSSLContext(const FunctionCallbackInfo<Value> &args) {
     Isolate* isolate = args.GetIsolate();
     if(args.Length() < 1 || !args[0]->IsObject()){
-      isolate->ThrowException(Exception::TypeError(
-      String::NewFromUtf8(isolate, "Error: One object expected")));
+#if NODE_MAJOR_VERSION >= 13
+        isolate->ThrowException(Exception::TypeError(
+            String::NewFromUtf8(isolate, "Error: One object expected").ToLocalChecked()));
+#else
+        isolate->ThrowException(Exception::TypeError(
+            String::NewFromUtf8(isolate, "Error: One object expected")));
+#endif
       return;
     }
     Local<Context> context = isolate->GetCurrentContext();
@@ -450,7 +466,7 @@ void terminateGroup(const FunctionCallbackInfo<Value> &args) {
 template <bool isServer>
 void broadcast(const FunctionCallbackInfo<Value> &args) {
     uWS::Group<isServer> *group = (uWS::Group<isServer> *) args[0].As<External>()->Value();
-    uWS::OpCode opCode = args[2]->BooleanValue(GetArgsCurCtx(args)).FromJust() ? uWS::OpCode::BINARY : uWS::OpCode::TEXT;
+    uWS::OpCode opCode = args[2].As<Boolean>()->Value() ? uWS::OpCode::BINARY : uWS::OpCode::TEXT;
     NativeString nativeString(args.GetIsolate(), args[1]);
     group->broadcast(nativeString.getData(), nativeString.getLength(), opCode);
 }
@@ -541,6 +557,10 @@ struct Namespace {
         NODE_SET_METHOD(group, "terminate", terminateGroup<isServer>);
         NODE_SET_METHOD(group, "broadcast", broadcast<isServer>);
 
+#if NODE_MAJOR_VERSION >= 13
+        object->Set(isolate->GetCurrentContext(), String::NewFromUtf8(isolate, "group").ToLocalChecked(), group);
+#else
         object->Set(String::NewFromUtf8(isolate, "group"), group);
+#endif
     }
 };
